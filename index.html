@@ -278,6 +278,28 @@
             margin: 0 auto;
         }
 
+        /* --- ESTILO DRESS CODE --- */
+        .dress-code-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .vestimenta-icono {
+            width: 60px;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.3));
+            animation: flotar 3s ease-in-out infinite;
+        }
+
+        .vestimenta-texto {
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
         #musica {
             display: none;
         }
@@ -303,7 +325,7 @@
             </svg>
 
             <h1>Para ti...</h1>
-            <p>Toca la pantalla para abrir 🌷</p>
+            <p>🌷 Toca la pantalla para abrir 🌷</p>
         </div>
     </div>
 
@@ -343,6 +365,39 @@
     </div>
 
     <div class="section">
+        <h2>Dress Code</h2>
+        <div class="dress-code-icons">
+            <!-- Vestido de Gala (Mujer) -->
+            <svg class="vestimenta-icono" viewBox="0 0 100 100" fill="none" stroke="#d4af37" stroke-width="1.5"
+                xmlns="http://www.w3.org/2000/svg">
+                <!-- Cuerpo Superior -->
+                <path d="M38 25 C42 20 58 20 62 25 L60 45 L40 45 Z" />
+                <!-- Falda Larga -->
+                <path d="M40 45 L25 90 C25 90 50 95 75 90 L60 45" />
+                <!-- Escote -->
+                <path d="M44 25 Q50 30 56 25" />
+                <!-- Cintura -->
+                <path d="M40 45 Q50 48 60 45" />
+            </svg>
+            <!-- Smoking/Tuxedo (Hombre) -->
+            <svg class="vestimenta-icono" viewBox="0 0 100 100" fill="none" stroke="#d4af37" stroke-width="1.5"
+                xmlns="http://www.w3.org/2000/svg">
+                <!-- Chaqueta y Hombros -->
+                <path d="M25 25 C25 22 35 18 50 18 C65 18 75 22 75 25 L75 85 L25 85 Z" />
+                <!-- Solapas (V) -->
+                <path d="M35 18 L50 60 L65 18" />
+                <!-- Camisa -->
+                <path d="M44 18 L50 35 L56 18" />
+                <!-- Pajarita (Bow Tie) -->
+                <rect x="47" y="24" width="6" height="3" fill="#d4af37" />
+                <path d="M44 22 L48 25 L44 28 Z" fill="#d4af37" />
+                <path d="M56 22 L52 25 L56 28 Z" fill="#d4af37" />
+            </svg>
+        </div>
+        <p class="vestimenta-texto">Vestimenta Formal</p>
+    </div>
+
+    <div class="section">
         <h2>Mesa de Regalos</h2>
         <svg class="sobre-icono" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.2"
             stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -350,13 +405,14 @@
             <polyline points="22,6 12,13 2,6"></polyline>
         </svg>
         <p class="regalos-texto">
-            "Tu presencia es el mejor regalo. Si algo me deseas obsequiar, un regalo en sobre lo sabré apreciar."
+            "Tu presencia es el mejor regalo. Pero si algo me deseas obsequiar, un regalo en sobre cerrado lo sabré
+            apreciar."
         </p>
     </div>
 
     <div class="section">
         <h2>Confirmación</h2>
-        <p>Por favor, confirma tu asistencia antes del [Fecha Límite].</p>
+        <p>Por favor, confirma tu asistencia antes del 17 de Abril.</p>
         <form id="formConfirmacion">
             <input type="text" name="nombre" placeholder="Tu Nombre y Apellido" required>
             <select name="asistencia" id="selectAsistencia" required>
