@@ -1,0 +1,27 @@
+name: CI/CD Invitacion Anahi
+
+on:
+  push:
+    branches: [ "main" ] # Se activa al subir cambios a la rama main
+
+jobs:
+  build_and_secure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Bajando el código de Paúl
+        uses: actions/checkout@v4
+
+      - name: 2. SEGURIDAD (HTML Hint)
+        # Este paso actúa como el "Sec" en DevSecOps
+        # Revisa que no falten etiquetas o que el código esté bien formado
+        uses: htmlhint/htmlhint-action@v2
+        with:
+          bundle-js: false
+
+      - name: 3. Publicar en GitHub Pages
+        # Solo se ejecuta si el paso 2 (Seguridad) salió bien ✅
+        if: success()
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: . 
+          branch: gh-pages

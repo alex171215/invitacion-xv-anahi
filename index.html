@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis XV Años</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #050a15;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- LA PORTADA MÁGICA --- */
+        #portada {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a0b2e 0%, #050a15 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 1s ease-in-out, visibility 1s;
+        }
+
+        .portada-content {
+            text-align: center;
+            animation: latido 2s infinite;
+        }
+
+        /* Icono de tulipán premium Line Art */
+        .tulipan-icono {
+            width: 80px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
+            animation: flotar 3s ease-in-out infinite;
+        }
+
+        @keyframes flotar {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .portada-content h1 {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 3em;
+            margin: 0;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: aparecerDebajo 1.5s ease-out forwards 0.5s;
+        }
+
+        .portada-content p {
+            color: #ffb6c1;
+            font-size: 1.1em;
+            margin-top: 15px;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: aparecerDebajo 1.5s ease-out forwards 1.2s;
+        }
+
+        @keyframes aparecerDebajo {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- EL DISEÑO PRINCIPAL --- */
+        .hero {
+            padding: 100px 20px 60px 20px;
+            background: linear-gradient(rgba(5, 10, 21, 0.85), rgba(26, 11, 46, 0.9)), url('https://images.unsplash.com/photo-1520764805728-48b4eeb2ce71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover;
+            border-bottom: 2px solid #d4af37;
+            text-align: center;
+        }
+
+        h1,
+        h2 {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            text-align: center;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            color: #f8f8f8;
+            letter-spacing: 1px;
+        }
+
+        /* --- ESTILO DE FECHA (REFERENCIA IMAGEN) --- */
+        .fecha-container {
+            margin: 40px auto;
+            max-width: 400px;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+        }
+
+        .mes-arqueado {
+            width: 100%;
+            height: 80px;
+            margin-bottom: -20px;
+            overflow: visible;
+        }
+
+        .mes-arqueado text {
+            fill: #d4af37;
+            font-size: 1.8em;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+        }
+
+        .fecha-fila {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.4);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+            padding: 15px 0;
+        }
+
+        .fecha-seccion {
+            font-size: 1.5em;
+            color: #ffffff;
+            letter-spacing: 3px;
+        }
+
+        .dia-numero {
+            font-size: 3.5em;
+            color: #ffb6c1;
+            /* Color rosado de la referencia */
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .divisor-linea {
+            height: 40px;
+            width: 1px;
+            background-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .countdown {
+            font-size: 2em;
+            margin: 30px 0;
+            font-family: 'Cinzel', serif;
+            color: #ffb6c1;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .section {
+            padding: 50px 20px;
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: rgba(26, 11, 46, 0.4);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            background-color: #d4af37;
+            color: #050a15;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn:hover {
+            background-color: #b58321;
+            transform: scale(1.05);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #d4af37;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #cccccc;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #ffb6c1;
+        }
+
+        select option {
+            background-color: #050a15;
+            color: #fff;
+        }
+
+        /* Clase para ocultar elementos suavemente */
+        .oculto {
+            display: none !important;
+        }
+
+        /* --- ESTILO MESA DE REGALOS --- */
+        .sobre-icono {
+            width: 70px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.3));
+            animation: flotar 3s ease-in-out infinite;
+        }
+
+        .regalos-texto {
+            font-style: italic;
+            color: #f8f8f8 !important;
+            line-height: 1.6;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        /* --- ESTILO DRESS CODE --- */
+        .dress-code-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .vestimenta-icono {
+            width: 60px;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.3));
+            animation: flotar 3s ease-in-out infinite;
+        }
+
+        .vestimenta-subtitulo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4em;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        .vestimenta-texto {
+            font-size: 1.1em;
+            color: #ffffff;
+            margin-top: 20px;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        #musica {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!--AQUI VA LA MUSICA-->
+    <audio id="musica" loop>
+        <source src="cancion.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="portada" onclick="abrirInvitacion()">
+        <div class="portada-content">
+            <!-- Tulipán Line Art Premium -->
+            <svg class="tulipan-icono" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 95V70" stroke="#d4af37" stroke-width="2" stroke-linecap="round" />
+                <path d="M50 70C30 70 20 50 20 35C20 20 35 10 50 30C65 10 80 20 80 35C80 50 70 70 50 70Z" fill="none"
+                    stroke="#d4af37" stroke-width="2" stroke-linejoin="round" />
+                <path d="M50 70C40 70 35 55 50 40C65 55 60 70 50 70Z" fill="none" stroke="#d4af37" stroke-width="1.5" />
+                <path d="M50 30V40" stroke="#d4af37" stroke-width="1.5" />
+                <path d="M30 85C30 85 45 80 50 70" stroke="#d4af37" stroke-width="2" fill="none" />
+            </svg>
+
+            <h1>Para ti...</h1>
+            <p>🌷 Toca la pantalla para abrir 🌷</p>
+        </div>
+    </div>
+
+    <div class="hero">
+        <p>Estás invitado a celebrar los XV años de</p>
+        <h1>Anahí Rosero</h1>
+
+        <!-- Bloque de Fecha Estilizado -->
+        <div class="fecha-container">
+            <svg class="mes-arqueado" viewBox="0 0 400 100">
+                <!-- Curva más suave para asegurar visibilidad -->
+                <path id="curve" d="M 40,80 Q 200,10 360,80" fill="transparent" />
+                <text>
+                    <textPath href="#curve" startOffset="50%" text-anchor="middle">
+                        Mayo
+                    </textPath>
+                </text>
+            </svg>
+            <div class="fecha-fila">
+                <div class="fecha-seccion">SÁBADO</div>
+                <div class="divisor-linea"></div>
+                <div class="dia-numero">30</div>
+                <div class="divisor-linea"></div>
+                <div class="fecha-seccion">2026</div>
+            </div>
+        </div>
+
+        <p>Faltan:</p>
+        <div class="countdown" id="reloj">Cargando contador...</div>
+    </div>
+
+    <!--AQUI VA LA UBICACIÓN-->
+    <div class="section">
+        <h2>Ubicación</h2>
+        <p>Te espero para celebrar este día tan especial.</p>
+        <a href="https://maps.app.goo.gl/89F79ki761orSMBM8" class="btn" target="_blank">Ver Mapa 📍</a>
+    </div>
+
+    <div class="section">
+        <h2>Dress Code</h2>
+        <h3 class="vestimenta-subtitulo">Guapos y Divinas</h3>
+        <div class="dress-code-icons">
+            <!-- Vestido de Gala (Mujer) -->
+            <svg class="vestimenta-icono" viewBox="0 0 100 100" fill="none" stroke="#d4af37" stroke-width="1.5"
+                xmlns="http://www.w3.org/2000/svg">
+                <!-- Cuerpo Superior -->
+                <path d="M38 25 C42 20 58 20 62 25 L60 45 L40 45 Z" />
+                <!-- Falda Larga -->
+                <path d="M40 45 L25 90 C25 90 50 95 75 90 L60 45" />
+                <!-- Escote -->
+                <path d="M44 25 Q50 30 56 25" />
+                <!-- Cintura -->
+                <path d="M40 45 Q50 48 60 45" />
+            </svg>
+            <!-- Smoking/Tuxedo (Hombre) -->
+            <svg class="vestimenta-icono" viewBox="0 0 100 100" fill="none" stroke="#d4af37" stroke-width="1.5"
+                xmlns="http://www.w3.org/2000/svg">
+                <!-- Chaqueta y Hombros -->
+                <path d="M25 25 C25 22 35 18 50 18 C65 18 75 22 75 25 L75 85 L25 85 Z" />
+                <!-- Solapas (V) -->
+                <path d="M35 18 L50 60 L65 18" />
+                <!-- Camisa -->
+                <path d="M44 18 L50 35 L56 18" />
+                <!-- Pajarita (Bow Tie) -->
+                <rect x="47" y="24" width="6" height="3" fill="#d4af37" />
+                <path d="M44 22 L48 25 L44 28 Z" fill="#d4af37" />
+                <path d="M56 22 L52 25 L56 28 Z" fill="#d4af37" />
+            </svg>
+        </div>
+        <p class="vestimenta-texto">Se reserva el color Rose Gold para la quinceañera</p>
+    </div>
+
+    <div class="section">
+        <h2>Captura el Momento</h2>
+        <svg class="sobre-icono" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.2"
+            stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"
+            style="width: 70px; margin-bottom: 20px; filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.3)); animation: flotar 3s ease-in-out infinite;">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        <p class="regalos-texto">
+            Ayúdanos a inmortalizar esta noche. Sube las fotos y videos que tomes durante la fiesta directamente aquí:
+        </p>
+
+        <a href="https://photos.app.goo.gl/vprDvVDhMG2M9VXK8" class="btn" target="_blank">Subir mis fotos 📸</a>
+    </div>
+
+    <div class="section">
+        <h2>Mesa de Regalos</h2>
+        <svg class="sobre-icono" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.2"
+            stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        <p class="regalos-texto">
+            "Tu presencia es el mejor regalo. Pero si algo me deseas obsequiar, un regalo en sobre cerrado lo sabré
+            apreciar."
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Confirmación</h2>
+        <p>Por favor, confirma tu asistencia antes del 17 de Abril.</p>
+        <form id="formConfirmacion">
+            <input type="text" name="nombre" placeholder="Tu Nombre y Apellido" required>
+            <select name="asistencia" id="selectAsistencia" required>
+                <option value="" disabled selected>¿Asistirás?</option>
+                <option value="Sí">Sí, ahí estaré</option>
+                <option value="No">No podré asistir</option>
+            </select>
+            <input type="number" name="acompanantes" id="inputAcompanantes" placeholder="Número de acompañantes" min="0"
+                required>
+            <textarea name="mensaje" placeholder="Un mensaje para la quinceañera (opcional)"></textarea>
+            <button type="submit" class="btn">Enviar Confirmación</button>
+        </form>
+        <p id="mensajeExito" style="display:none; color: #ffb6c1; font-weight: bold; margin-top: 15px;">¡Gracias! Tu
+            respuesta fue registrada.</p>
+    </div>
+
+    <script>
+        function abrirInvitacion() {
+            const audio = document.getElementById('musica');
+            audio.play();
+            const portada = document.getElementById('portada');
+            portada.style.opacity = '0';
+            setTimeout(() => { portada.style.visibility = 'hidden'; }, 1000);
+        }
+
+        const fechaFiesta = new Date("2026-05-30T20:00:00").getTime();
+
+        setInterval(function () {
+            const ahora = new Date().getTime();
+            const distancia = fechaFiesta - ahora;
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+            document.getElementById("reloj").innerHTML = dias + "d " + horas + "h " + minutos + "m " + segundos + "s ";
+        }, 1000);
+
+        // --- NUEVA LÓGICA DEL FORMULARIO ---
+        const selectAsistencia = document.getElementById('selectAsistencia');
+        const inputAcompanantes = document.getElementById('inputAcompanantes');
+
+        selectAsistencia.addEventListener('change', function () {
+            if (this.value === 'No') {
+                inputAcompanantes.classList.add('oculto'); // Oculta el campo
+                inputAcompanantes.removeAttribute('required'); // Quita la obligatoriedad
+                inputAcompanantes.value = '0'; // Pone 0 por defecto para que la base de datos no quede vacía
+            } else {
+                inputAcompanantes.classList.remove('oculto'); // Muestra el campo
+                inputAcompanantes.setAttribute('required', 'true'); // Vuelve a ser obligatorio
+                inputAcompanantes.value = ''; // Limpia el valor
+            }
+        });
+
+        // CONEXIÓN A GOOGLE SHEETS
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxbvftUqelZTCxubhN8sUtGUliYoYVrMzWjwqb3AZnIGtG54rb2Qvp3swLkarDb8hW0/exec';
+        const form = document.getElementById('formConfirmacion');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const btnSubmit = form.querySelector('button[type="submit"]');
+            btnSubmit.innerHTML = "Enviando...";
+
+            fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+                .then(response => {
+                    document.getElementById('mensajeExito').style.display = 'block';
+                    form.reset();
+                    btnSubmit.innerHTML = "Enviar Confirmación";
+                    // Volver a mostrar el input de acompañantes por si se hace otro registro
+                    inputAcompanantes.classList.remove('oculto');
+                    inputAcompanantes.setAttribute('required', 'true');
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    btnSubmit.innerHTML = "Error al enviar";
+                })
+        })
+    </script>
+</body>
+
+</html>
