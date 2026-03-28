@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis XV Años</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Outfit:wght@300;400;500;600;700&display=swap');
 
         body {
             font-family: 'Outfit', sans-serif;
@@ -18,6 +18,88 @@
             position: relative;
         }
 
+        /* --- CORTINAS SUPERIORES (SIEMPRE VISIBLES) Y PANELES (SE ABREN) --- */
+        .valance-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: space-around;
+            overflow: visible; /* Permite mostrar las sombras inferiores */
+            z-index: 9999;
+            pointer-events: none;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+        }
+
+        .swag {
+            flex: 1;
+            min-width: 25%; /* 5 elementos encajan forzando superposición */
+            height: 45px;
+            background: linear-gradient(180deg, #FDEEED 0%, #D88FA1 100%);
+            border-radius: 0 0 60% 40% / 0 0 80% 60%; /* Más fluido y asimétrico que un círculo perfecto */
+            margin: -5px -2% 0 -2%;
+            box-shadow: 0 4px 6px rgba(196, 122, 138, 0.3);
+            position: relative;
+        }
+
+        .swag:nth-child(even) {
+            z-index: 2; /* Sobreponiéndose a los semicírculos laterales */
+            height: 55px; /* Un poco más profundo */
+            background: linear-gradient(180deg, #EADCE0 0%, #C47A8A 100%);
+            border-radius: 0 0 40% 60% / 0 0 60% 80%; /* Curvatura opuesta para fluidez natural */
+            box-shadow: 0 6px 12px rgba(196, 122, 138, 0.4);
+        }
+
+        .cortina {
+            position: fixed;
+            top: 0;
+            width: 50vw;
+            height: 100vh;
+            background: linear-gradient(90deg, #E5A5B5 0%, #D88FA1 20%, #ECAFC0 50%, #C47A8A 80%, #D47E95 100%);
+            z-index: 9998;
+            transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+            pointer-events: none;
+        }
+
+        .cortina-izq {
+            left: 0;
+            border-right: 2px solid rgba(212, 175, 55, 0.8);
+            filter: drop-shadow(15px 0 30px rgba(0, 0, 0, 0.4));
+            transform: translateX(0);
+        }
+
+        .cortina-der {
+            right: 0;
+            border-left: 2px solid rgba(212, 175, 55, 0.8);
+            filter: drop-shadow(-15px 0 30px rgba(0, 0, 0, 0.4));
+            transform: translateX(0);
+        }
+
+        .cortina::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(90deg, transparent, transparent 8%, rgba(0, 0, 0, 0.08) 12%, transparent 16%);
+            pointer-events: none;
+        }
+
+        body.abierto .cortina-izq {
+            transform: translateX(-100%);
+        }
+
+        body.abierto .cortina-der {
+            transform: translateX(100%);
+        }
+
         /* --- TULIPANES LATERALES --- */
         #fondo-animado {
             position: fixed;
@@ -25,13 +107,14 @@
             left: 0;
             width: 100%;
             height: 100vh;
-            z-index: -1;
+            z-index: 0;
+            /* Detrás del elegant-container */
             pointer-events: none;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
             padding: 0;
-            overflow: hidden; /* Prevent horizontal scroll from falling petals */
+            overflow: hidden;
         }
 
         .grupo-tulipanes {
@@ -45,12 +128,14 @@
         }
 
         .grupo-izq {
-            left: -5%; /* Push slightly off screen */
+            left: -5%;
+            /* Push slightly off screen */
         }
 
         .grupo-der {
             right: -5%;
-            transform: scaleX(-1); /* Mirror entirely */
+            transform: scaleX(-1);
+            /* Mirror entirely */
         }
 
         .tulipan-svg {
@@ -67,17 +152,28 @@
 
         .tulipan-svg.sec {
             width: 90%;
-            left: 30%; /* Shifted right relative to parent */
-            bottom: -10vh; /* Lower down */
+            left: 30%;
+            /* Shifted right relative to parent */
+            bottom: -10vh;
+            /* Lower down */
             transform-origin: bottom center;
-            transform: rotate(15deg); /* Crossed over */
+            transform: rotate(15deg);
+            /* Crossed over */
             z-index: 1;
             filter: brightness(0.9);
         }
 
         .petal {
-            transform-origin: 100px 248px;
-            transition: transform 0.1s ease-out;
+            transform-box: view-box;
+            /* Asegura que el origen del transform sea el viewBox local */
+            transform-origin: 125px 240px;
+            /* Centered exactly at the stem connection point */
+            will-change: transform;
+            /* EVITA QUE SAFARI MÓVIL HAGA CLIPPING Y LOS APAREZCA DE GOLPE */
+            -webkit-backface-visibility: hidden;
+            /* Hack adicional para estabilizar renderizado en iOS */
+            backface-visibility: hidden;
+            /* Se ha eliminado la transición para evitar que "jale" o titile cuando se hace scroll rápido hacia arriba */
         }
 
         /* --- LA PORTADA MÁGICA --- */
@@ -87,8 +183,9 @@
             left: 0;
             width: 100%;
             height: 100vh;
-            background: linear-gradient(135deg, #f4edf0 0%, #FAF9F6 100%);
-            z-index: 9999;
+            background: rgba(255, 252, 249, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -98,49 +195,59 @@
 
         .portada-content {
             text-align: center;
-            animation: latido 2s infinite;
+            background: #fff;
+            padding: 50px 30px;
+            border: 1px solid rgba(196, 122, 138, 0.4);
+            box-shadow: 0 15px 40px rgba(164, 109, 121, 0.15);
+            border-radius: 4px;
+            position: relative;
+            width: 80%;
+            max-width: 400px;
+            animation: aparecerDebajo 1s ease-out forwards, flotar 4s ease-in-out infinite 1s;
         }
 
-        /* Icono de tulipán premium Line Art */
-        .tulipan-icono {
-            width: 80px;
-            margin-bottom: 25px;
-            filter: drop-shadow(0 0 10px rgba(229, 165, 181, 0.4));
-            animation: flotar 3s ease-in-out infinite;
+        .portada-content::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(196, 122, 138, 0.2);
+            border-radius: 2px;
+            pointer-events: none;
         }
 
         @keyframes flotar {
-            0% {
+            0%, 100% {
                 transform: translateY(0px);
             }
-
             50% {
-                transform: translateY(-15px);
-            }
-
-            100% {
-                transform: translateY(0px);
+                transform: translateY(-8px);
             }
         }
 
         .portada-content h1 {
-            font-family: 'Cinzel', serif;
-            color: #e5a5b5;
-            font-size: 3em;
-            margin: 0;
-            letter-spacing: 5px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 300;
+            font-size: 2.8em;
+            color: #C47A8A;
+            letter-spacing: 4px;
             text-transform: uppercase;
+            margin: 0 0 5px 0;
             opacity: 0;
-            animation: aparecerDebajo 1.5s ease-out forwards 0.5s;
+            animation: aparecerDebajo 1.5s ease-out forwards 0.4s;
         }
 
         .portada-content p {
-            color: #d47e95;
-            font-size: 1.1em;
-            margin-top: 15px;
-            letter-spacing: 2px;
+            color: #9282A8;
+            font-size: 0.9em;
+            font-weight: 500;
+            letter-spacing: 3px;
+            margin-top: 10px;
+            text-transform: uppercase;
             opacity: 0;
-            animation: aparecerDebajo 1.5s ease-out forwards 1.2s;
+            animation: aparecerDebajo 1.5s ease-out forwards 0.8s;
         }
 
         @keyframes aparecerDebajo {
@@ -148,379 +255,324 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        /* --- EL DISEÑO PRINCIPAL --- */
-        .hero {
-            padding: 120px 20px 60px 20px;
-            background: transparent;
+        /* --- CONTENEDOR ELEGANTE TIPO REAL --- */
+        .elegant-container {
+            font-family: 'Outfit', sans-serif;
+            background: rgba(255, 252, 249, 0.10);
+            /* Más transparente para que se vean los tulipanes */
+            backdrop-filter: blur(10px);
+            color: #555;
+            padding: 50px 30px;
+            margin: 100px auto 60px auto;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(164, 109, 121, 0.15);
+            border-radius: 5px;
             text-align: center;
+            z-index: 10;
         }
 
-        h1,
-        h2 {
-            font-family: 'Playfair Display', serif;
-            color: #e5a5b5;
-            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
-            margin-bottom: 10px;
+        /* Borde interior sutil y elegante */
+        .elegant-container::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 1px solid rgba(196, 122, 138, 0.4);
+            /* Rose Gold */
+            border-radius: 2px;
+            pointer-events: none;
         }
 
-        h1 {
-            font-size: 3.5em;
+        .royal-intro {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.6;
+            margin: 5px 0 40px 0;
+            padding: 0 15px;
+            font-style: italic;
         }
 
-        h2 {
-            font-size: 2.5em;
-            text-align: center;
-        }
-
-        .hero p {
-            font-size: 1.2em;
-            color: #555555;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        /* --- ESTILO DE FECHA (REFERENCIA IMAGEN) --- */
-        .fecha-container {
-            margin: 40px auto;
-            max-width: 400px;
-            text-align: center;
-            font-family: 'Cinzel', serif;
-        }
-
-        .mes-arqueado {
-            width: 100%;
-            height: 80px;
-            margin-bottom: -20px;
-            overflow: visible;
-        }
-
-        .mes-arqueado text {
-            fill: #e5a5b5;
-            font-size: 1.8em;
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            font-family: 'Cinzel', serif;
-        }
-
-        .fecha-fila {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            border-top: 1px solid rgba(229, 165, 181, 0.4);
-            border-bottom: 1px solid rgba(229, 165, 181, 0.4);
-            padding: 15px 0;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 10px;
-        }
-
-        .fecha-seccion {
-            font-size: 1.5em;
-            color: #555555;
-            letter-spacing: 3px;
-        }
-
-        .dia-numero {
-            font-size: 3.5em;
-            color: #d47e95;
-            font-weight: 700;
+        .elegant-title {
+            font-family: 'Alex Brush', cursive;
+            font-size: 4.5em;
+            color: #C47A8A;
+            /* Rose Gold apagado */
+            text-shadow: 1px 1px 2px rgba(196, 122, 138, 0.2);
+            margin: 5px 0 10px 0;
+            font-weight: 400;
             line-height: 1;
         }
 
-        .divisor-linea {
-            height: 40px;
-            width: 1px;
-            background-color: rgba(229, 165, 181, 0.4);
+        .elegant-subtitle {
+            font-size: 0.9em;
+            color: #9282A8;
+            /* Lila suave */
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin: 0;
+            font-weight: 500;
         }
+
+        .royal-parents {
+            font-size: 0.8em;
+            color: #9282A8;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .royal-invite-text {
+            font-size: 0.85em;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 5px 0 20px 0;
+            font-weight: 600;
+        }
+
+        /* --- DISEÑO DE FECHA TIPO IMAGEN --- */
+        .royal-date-block {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .royal-date-left {
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+            font-family: 'Alex Brush', cursive;
+            font-size: 2.2em;
+            line-height: 0.9;
+        }
+
+        .royal-date-center {
+            font-size: 4.5em;
+            font-weight: 300;
+            line-height: 1;
+            border-left: 1px solid rgba(196, 122, 138, 0.5);
+            border-right: 1px solid rgba(196, 122, 138, 0.5);
+            padding: 0 20px;
+            font-family: 'Outfit', sans-serif;
+            color: #9282A8;
+            /* Número lila */
+        }
+
+        .royal-date-right {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: #9282A8;
+        }
+
+        .royal-date-right hr {
+            width: 100%;
+            margin: 5px 0;
+            border: none;
+            border-top: 1px solid rgba(196, 122, 138, 0.5);
+        }
+
+        .elegant-section {
+            margin: 20px 0;
+        }
+
+        .royal-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 25px auto;
+            width: 80%;
+            max-width: 400px;
+            opacity: 0.6; /* Hacemos los separadores más delicados y translúcidos */
+        }
+
+        .royal-divider::before,
+        .royal-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(196, 122, 138, 0.4), transparent);
+        }
+
+        .royal-divider svg {
+            width: 15px; /* Corazón súper pequeño y sutil */
+            margin: 0 15px;
+            fill: none;
+        }
+
+        .elegant-section h3 {
+            font-size: 1em;
+            color: #C47A8A;
+            /* Rose Gold */
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .elegant-section p {
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.6;
+            margin: 0 0 15px 0;
+        }
+
 
         .countdown {
-            font-size: 2em;
-            margin: 30px 0;
-            font-family: 'Cinzel', serif;
-            color: #d47e95;
-            letter-spacing: 2px;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.7);
-            padding: 10px;
-            border-radius: 10px;
-            display: inline-block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4em;
+            font-weight: 400;
+            color: #C47A8A;
+            margin: 15px 0 25px 0;
+            letter-spacing: 4px;
+            text-transform: uppercase;
         }
 
-        .section {
-            padding: 50px 20px;
-            max-width: 600px;
-            margin: 30px auto;
-            background-color: rgba(250, 249, 246, 0.85);
+        .btn-elegant {
+            display: inline-block;
+            padding: 12px 30px;
+            background: rgba(196, 122, 138, 0.85); /* Color profundo como los corazones */
             backdrop-filter: blur(8px);
-            border-radius: 15px;
-            border: 1px solid rgba(229, 165, 181, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 15px 35px;
-            background-color: #e5a5b5;
-            color: #ffffff;
+            -webkit-backdrop-filter: blur(8px);
+            color: #fff; /* Blanco puro para contraste impecable */
             text-decoration: none;
-            border-radius: 30px;
-            font-weight: 600;
-            margin-top: 20px;
-            border: none;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-top: 5px;
             cursor: pointer;
-            font-size: 1.1em;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-            box-shadow: 0 4px 15px rgba(229, 165, 181, 0.4);
-            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(196, 122, 138, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.3); /* Sombra intensa y destello interno */
+            border: 1px solid rgba(196, 122, 138, 0.6);
+            border-radius: 30px; /* Botones mucho más redondos (forma píldora) */
+            text-transform: uppercase;
+            font-size: 0.85em;
         }
 
-        .btn:hover {
-            background-color: #d47e95;
-            transform: scale(1.05);
+        .btn-elegant:hover {
+            background: rgba(196, 122, 138, 1); /* Sólido al pasar el ratón */
+            color: #fff; 
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(196, 122, 138, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
         }
 
-        form {
+        .form-elegant {
             display: flex;
             flex-direction: column;
             gap: 15px;
             margin-top: 20px;
+            text-align: left;
         }
 
-        input,
-        select,
-        textarea {
-            padding: 15px;
+        .form-elegant input,
+        .form-elegant select,
+        .form-elegant textarea {
+            padding: 12px 15px;
+            border: 1px solid rgba(229, 165, 181, 0.5);
+            font-family: 'Outfit', sans-serif;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 0.95em;
             border-radius: 8px;
-            border: 1px solid #e5a5b5;
-            background-color: rgba(255, 255, 255, 0.8);
-            color: #333333;
-            width: 100%;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
+            color: #555;
             transition: all 0.3s ease;
         }
 
-        input::placeholder,
-        textarea::placeholder {
-            color: #999999;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
+        .form-elegant input:focus,
+        .form-elegant select:focus,
+        .form-elegant textarea:focus {
             outline: none;
-            background-color: #ffffff;
-            border-color: #d47e95;
-            box-shadow: 0 0 8px rgba(229, 165, 181, 0.3);
+            border-color: #C47A8A;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(229, 165, 181, 0.2);
         }
 
-        select option {
-            background-color: #ffffff;
-            color: #333333;
-        }
+        /* --- RESPONSIVE DESIGN PARA CELULARES --- */
+        @media (max-width: 768px) {
+            .grupo-tulipanes {
+                min-width: 120px;
+                width: 35vw;
+            }
 
-        /* Clase para ocultar elementos suavemente */
-        .oculto {
-            display: none !important;
-        }
+            .grupo-izq {
+                left: -10%;
+            }
 
-        /* --- ESTILO MESA DE REGALOS --- */
-        .sobre-icono {
-            width: 70px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 8px rgba(229, 165, 181, 0.3));
-            animation: flotar 3s ease-in-out infinite;
-        }
+            .grupo-der {
+                right: -10%;
+            }
 
-        .regalos-texto {
-            font-style: italic;
-            color: #555555 !important;
-            line-height: 1.6;
-            max-width: 80%;
-            margin: 0 auto;
-        }
+            .tulipan-svg.sec {
+                display: none;
+            }
 
-        /* --- ESTILO DRESS CODE --- */
-        .dress-code-icons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            margin-bottom: 20px;
-        }
+            .elegant-container {
+                margin: 40px 15px 40px 15px; /* Menos margen superior ahora que no hay cenefas */
+                padding: 30px 15px; /* Padding interno más estrecho */
+                background: rgba(255, 252, 249, 0.65);
+                /* Más transparente para mostrar tulipanes en celular */
+            }
 
-        .vestimenta-icono {
-            width: 60px;
-            filter: drop-shadow(0 0 8px rgba(229, 165, 181, 0.3));
-            animation: flotar 3s ease-in-out infinite;
-        }
+            .elegant-title {
+                font-size: 3em; /* Un poco más pequeño para nombres largos */
+            }
+            
+            .elegant-subtitle {
+                font-size: 0.8em;
+                letter-spacing: 2px;
+            }
 
-        .vestimenta-subtitulo {
-            font-family: 'Cinzel', serif;
-            font-size: 1.4em;
-            color: #333333;
-            margin-bottom: 20px;
-            letter-spacing: 3px;
-        }
+            /* Ajustes para que la fecha compleja quepa en una fila de celular */
+            .royal-date-block {
+                gap: 8px;
+                margin: 20px 0;
+            }
 
-        /* --- ESTILOS GLASSMORPHISM Y CORAZON --- */
-        .glass-box {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(229, 165, 181, 0.15);
-            display: inline-block;
-            padding: 20px 50px;
-            margin-bottom: 20px;
-        }
+            .royal-date-left {
+                font-size: 1.6em;
+            }
 
-        .heart-blur {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(236,175,192,0.35) 0%, rgba(236,175,192,0) 70%);
-            border-radius: 50%;
-            filter: blur(50px);
-            transform: translate(-50%, -50%);
-            z-index: -2;
-            pointer-events: none;
-        }
+            .royal-date-center {
+                font-size: 3.2em;
+                padding: 0 12px;
+            }
 
-        /* --- TARJETAS ESTILO STORIES (REFERENCIA) --- */
-        .section-card {
-            background: #ffffff;
-            border-radius: 20px;
-            max-width: 500px;
-            margin: 40px auto;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(164, 109, 121, 0.15);
-            display: flex;
-            flex-direction: column;
-            z-index: 10;
-        }
-
-        .card-header {
-            background: #C47A8A;
-            color: #ffffff;
-            padding: 20px 30px;
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-header h2 {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 700;
-            font-size: 1.8em;
-            margin: 0;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .card-number {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 300;
-            font-size: 1.5em;
-            opacity: 0.8;
-        }
-
-        .card-body {
-            padding: 40px 30px;
-            background: #ffffff;
-            text-align: left;
-        }
-
-        .card-body p {
-            font-size: 1.1em;
-            color: #A46D79;
-            line-height: 1.6;
-            margin: 0 0 20px 0;
-            font-weight: 400;
-        }
-
-        h1, h2, .vestimenta-subtitulo, .mes-arqueado text, .countdown {
-            font-family: 'Outfit', sans-serif !important;
-        }
-        h1 { font-style: normal; font-weight: 700; letter-spacing: 2px; }
-
-        input, select, textarea, .btn {
-            font-family: 'Outfit', sans-serif !important;
-            border-radius: 12px;
-        }
-
-        .btn {
-            background-color: #C47A8A !important;
-            box-shadow: 0 8px 20px rgba(196, 122, 138, 0.3) !important;
-            font-weight: 600 !important;
-        }
-        .btn:hover { background-color: #A46D79 !important; }
-
-        /* Icons */
-        .card-icon-container {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        .icon-svg {
-            width: 50px;
-            height: 50px;
-            stroke: #C47A8A;
-            fill: none;
-            stroke-width: 1.5;
-            background: #EADCE0;
-            padding: 12px;
-            border-radius: 50%;
-        }
-
-        /* Polaroid */
-        .polaroid {
-            background: #ffffff;
-            padding: 15px 15px 50px 15px;
-            box-shadow: 0 15px 35px rgba(164, 109, 121, 0.2);
-            display: inline-block;
-            position: relative;
-            transform: rotate(-2deg);
-            margin: 20px 0;
-        }
-        .polaroid-inner {
-            background: #EADCE0;
-            width: 250px;
-            height: 250px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .polaroid-text { z-index: 2; text-align: center; }
-        .polaroid-dia { font-size: 5em; color: #A46D79; line-height: 1; font-weight: 700; }
-        .polaroid-mes { font-size: 1.8em; color: #C47A8A; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; }
-        .tape { position: absolute; width: 100px; height: 30px; background: rgba(255, 255, 255, 0.5); z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .tape-1 { top: -10px; left: -30px; transform: rotate(-35deg); }
-        .tape-2 { bottom: 10px; right: -30px; transform: rotate(-25deg); }
-
-        #musica {
-            display: none;
+            .royal-date-right {
+                font-size: 0.85em;
+            }
         }
     </style>
 </head>
 
 <body>
+    <!-- --- CORTINAS (VALENCE FIJA Y PANELES QUE SE ABREN) --- -->
+    <div class="valance-container">
+        <div class="swag"></div>
+        <div class="swag"></div>
+        <div class="swag"></div>
+        <div class="swag"></div>
+        <div class="swag"></div>
+    </div>
+    <div class="cortina cortina-izq"></div>
+    <div class="cortina cortina-der"></div>
+
     <!-- DIFUMINADO ROSA EN EL CENTRO -->
     <div class="heart-blur"></div>
 
@@ -554,59 +606,97 @@
     <div id="fondo-animado">
         <div class="grupo-tulipanes grupo-izq">
             <svg class="tulipan-svg prin" viewBox="0 0 250 600" xmlns="http://www.w3.org/2000/svg">
-                <!-- Tallo curvo orgánico -->
-                <path d="M125,240 C140,350 110,480 80,600" stroke="#879F6E" stroke-width="8" fill="none" stroke-linecap="round"/>
-                <!-- Hojas largas envolventes -->
+                <path d="M125,240 C125,280 110,480 80,600" stroke="#879F6E" stroke-width="8" fill="none"
+                    stroke-linecap="round" />
+                <path d="M112,235 C115,248 135,248 138,235 C130,242 120,242 112,235 Z" fill="#879F6E" />
                 <path d="M80,600 C70,500 50,400 40,250 C70,380 110,450 120,530 Z" fill="url(#gradHoja)" />
                 <path d="M85,550 C130,480 180,350 160,260 C155,380 120,480 100,530 Z" fill="#9CB286" />
                 <g class="petalos">
-                    <path class="petal petal-back" d="M110,230 C100,220 85,140 105,90 C125,75 140,75 140,90 C160,140 140,230 130,240 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-left-back" d="M117,235 C80,220 65,160 80,105 C95,115 110,150 118,235 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-right-back" d="M128,235 C170,220 185,160 170,105 C155,115 140,150 132,235 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-left" d="M120,245 C75,220 60,140 90,85 C110,130 115,180 125,245 Z" fill="url(#gradLeft)" />
-                    <path class="petal petal-right" d="M130,245 C175,220 190,140 160,85 C140,130 135,180 125,245 Z" fill="url(#gradRight)" />
-                    <path class="petal petal-center" d="M110,235 C80,180 100,95 125,90 C150,95 170,180 140,235 C130,245 120,245 110,235 Z" fill="url(#gradCenter)" />
+                    <path class="petal petal-back"
+                        d="M110,230 C100,220 85,140 105,90 C125,75 140,75 140,90 C160,140 140,230 130,240 Z"
+                        fill="url(#gradBack)" />
+                    <path class="petal petal-left-back" d="M117,235 C80,220 65,160 80,105 C95,115 110,150 118,235 Z"
+                        fill="url(#gradBack)" />
+                    <path class="petal petal-right-back"
+                        d="M128,235 C170,220 185,160 170,105 C155,115 140,150 132,235 Z" fill="url(#gradBack)" />
+                    <path class="petal petal-left" d="M120,245 C75,220 60,140 90,85 C110,130 115,180 125,245 Z"
+                        fill="url(#gradLeft)" />
+                    <path class="petal petal-right" d="M130,245 C175,220 190,140 160,85 C140,130 135,180 125,245 Z"
+                        fill="url(#gradRight)" />
+                    <path class="petal petal-center"
+                        d="M110,235 C80,180 100,95 125,90 C150,95 170,180 140,235 C130,245 120,245 110,235 Z"
+                        fill="url(#gradCenter)" />
                 </g>
             </svg>
             <svg class="tulipan-svg sec" viewBox="0 0 250 600" xmlns="http://www.w3.org/2000/svg">
-                <path d="M125,240 C110,350 130,480 150,600" stroke="#879F6E" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <path d="M125,240 C125,280 130,480 150,600" stroke="#879F6E" stroke-width="6" fill="none"
+                    stroke-linecap="round" />
+                <path d="M112,235 C115,248 135,248 138,235 C130,242 120,242 112,235 Z" fill="#879F6E" />
                 <path d="M150,600 C160,500 180,400 190,300 C160,400 130,450 125,530 Z" fill="url(#gradHoja)" />
                 <path d="M140,550 C110,480 80,350 90,260 C100,380 120,480 130,530 Z" fill="#9CB286" />
                 <g class="petalos">
-                    <path class="petal petal-back" d="M110,230 C100,220 85,140 105,90 C125,75 140,75 140,90 C160,140 140,230 130,240 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-left-back" d="M117,235 C80,220 65,160 80,105 C95,115 110,150 118,235 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-right-back" d="M128,235 C170,220 185,160 170,105 C155,115 140,150 132,235 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-left" d="M120,245 C75,220 60,140 90,85 C110,130 115,180 125,245 Z" fill="url(#gradLeft)" />
-                    <path class="petal petal-right" d="M130,245 C175,220 190,140 160,85 C140,130 135,180 125,245 Z" fill="url(#gradRight)" />
-                    <path class="petal petal-center" d="M110,235 C80,180 100,95 125,90 C150,95 170,180 140,235 C130,245 120,245 110,235 Z" fill="url(#gradCenter)" />
+                    <path class="petal petal-back"
+                        d="M110,230 C100,220 85,140 105,90 C125,75 140,75 140,90 C160,140 140,230 130,240 Z"
+                        fill="url(#gradBack)" />
+                    <path class="petal petal-left-back" d="M117,235 C80,220 65,160 80,105 C95,115 110,150 118,235 Z"
+                        fill="url(#gradBack)" />
+                    <path class="petal petal-right-back"
+                        d="M128,235 C170,220 185,160 170,105 C155,115 140,150 132,235 Z" fill="url(#gradBack)" />
+                    <path class="petal petal-left" d="M120,245 C75,220 60,140 90,85 C110,130 115,180 125,245 Z"
+                        fill="url(#gradLeft)" />
+                    <path class="petal petal-right" d="M130,245 C175,220 190,140 160,85 C140,130 135,180 125,245 Z"
+                        fill="url(#gradRight)" />
+                    <path class="petal petal-center"
+                        d="M110,235 C80,180 100,95 125,90 C150,95 170,180 140,235 C130,245 120,245 110,235 Z"
+                        fill="url(#gradCenter)" />
                 </g>
             </svg>
         </div>
         <div class="grupo-tulipanes grupo-der">
             <svg class="tulipan-svg prin" viewBox="0 0 250 600" xmlns="http://www.w3.org/2000/svg">
-                <path d="M125,240 C140,350 110,480 80,600" stroke="#879F6E" stroke-width="8" fill="none" stroke-linecap="round"/>
+                <path d="M125,240 C125,280 110,480 80,600" stroke="#879F6E" stroke-width="8" fill="none"
+                    stroke-linecap="round" />
+                <path d="M112,235 C115,248 135,248 138,235 C130,242 120,242 112,235 Z" fill="#879F6E" />
                 <path d="M80,600 C70,500 50,400 40,250 C70,380 110,450 120,530 Z" fill="url(#gradHoja)" />
                 <path d="M85,550 C130,480 180,350 160,260 C155,380 120,480 100,530 Z" fill="#9CB286" />
                 <g class="petalos">
-                    <path class="petal petal-back" d="M110,230 C100,220 85,140 105,90 C125,75 140,75 140,90 C160,140 140,230 130,240 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-left-back" d="M117,235 C80,220 65,160 80,105 C95,115 110,150 118,235 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-right-back" d="M128,235 C170,220 185,160 170,105 C155,115 140,150 132,235 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-left" d="M120,245 C75,220 60,140 90,85 C110,130 115,180 125,245 Z" fill="url(#gradLeft)" />
-                    <path class="petal petal-right" d="M130,245 C175,220 190,140 160,85 C140,130 135,180 125,245 Z" fill="url(#gradRight)" />
-                    <path class="petal petal-center" d="M110,235 C80,180 100,95 125,90 C150,95 170,180 140,235 C130,245 120,245 110,235 Z" fill="url(#gradCenter)" />
+                    <path class="petal petal-back"
+                        d="M110,230 C100,220 85,140 105,90 C125,75 140,75 140,90 C160,140 140,230 130,240 Z"
+                        fill="url(#gradBack)" />
+                    <path class="petal petal-left-back" d="M117,235 C80,220 65,160 80,105 C95,115 110,150 118,235 Z"
+                        fill="url(#gradBack)" />
+                    <path class="petal petal-right-back"
+                        d="M128,235 C170,220 185,160 170,105 C155,115 140,150 132,235 Z" fill="url(#gradBack)" />
+                    <path class="petal petal-left" d="M120,245 C75,220 60,140 90,85 C110,130 115,180 125,245 Z"
+                        fill="url(#gradLeft)" />
+                    <path class="petal petal-right" d="M130,245 C175,220 190,140 160,85 C140,130 135,180 125,245 Z"
+                        fill="url(#gradRight)" />
+                    <path class="petal petal-center"
+                        d="M110,235 C80,180 100,95 125,90 C150,95 170,180 140,235 C130,245 120,245 110,235 Z"
+                        fill="url(#gradCenter)" />
                 </g>
             </svg>
             <svg class="tulipan-svg sec" viewBox="0 0 250 600" xmlns="http://www.w3.org/2000/svg">
-                <path d="M125,240 C110,350 130,480 150,600" stroke="#879F6E" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <path d="M125,240 C125,280 130,480 150,600" stroke="#879F6E" stroke-width="6" fill="none"
+                    stroke-linecap="round" />
+                <path d="M112,235 C115,248 135,248 138,235 C130,242 120,242 112,235 Z" fill="#879F6E" />
                 <path d="M150,600 C160,500 180,400 190,300 C160,400 130,450 125,530 Z" fill="url(#gradHoja)" />
                 <path d="M140,550 C110,480 80,350 90,260 C100,380 120,480 130,530 Z" fill="#9CB286" />
                 <g class="petalos">
-                    <path class="petal petal-back" d="M110,230 C100,220 85,140 105,90 C125,75 140,75 140,90 C160,140 140,230 130,240 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-left-back" d="M117,235 C80,220 65,160 80,105 C95,115 110,150 118,235 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-right-back" d="M128,235 C170,220 185,160 170,105 C155,115 140,150 132,235 Z" fill="url(#gradBack)" />
-                    <path class="petal petal-left" d="M120,245 C75,220 60,140 90,85 C110,130 115,180 125,245 Z" fill="url(#gradLeft)" />
-                    <path class="petal petal-right" d="M130,245 C175,220 190,140 160,85 C140,130 135,180 125,245 Z" fill="url(#gradRight)" />
-                    <path class="petal petal-center" d="M110,235 C80,180 100,95 125,90 C150,95 170,180 140,235 C130,245 120,245 110,235 Z" fill="url(#gradCenter)" />
+                    <path class="petal petal-back"
+                        d="M110,230 C100,220 85,140 105,90 C125,75 140,75 140,90 C160,140 140,230 130,240 Z"
+                        fill="url(#gradBack)" />
+                    <path class="petal petal-left-back" d="M117,235 C80,220 65,160 80,105 C95,115 110,150 118,235 Z"
+                        fill="url(#gradBack)" />
+                    <path class="petal petal-right-back"
+                        d="M128,235 C170,220 185,160 170,105 C155,115 140,150 132,235 Z" fill="url(#gradBack)" />
+                    <path class="petal petal-left" d="M120,245 C75,220 60,140 90,85 C110,130 115,180 125,245 Z"
+                        fill="url(#gradLeft)" />
+                    <path class="petal petal-right" d="M130,245 C175,220 190,140 160,85 C140,130 135,180 125,245 Z"
+                        fill="url(#gradRight)" />
+                    <path class="petal petal-center"
+                        d="M110,235 C80,180 100,95 125,90 C150,95 170,180 140,235 C130,245 120,245 110,235 Z"
+                        fill="url(#gradCenter)" />
                 </g>
             </svg>
         </div>
@@ -619,118 +709,117 @@
 
     <div id="portada" onclick="abrirInvitacion()">
         <div class="portada-content">
-            <!-- Tulipán Line Art Premium -->
-            <svg class="tulipan-icono" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 95V70" stroke="#e5a5b5" stroke-width="2" stroke-linecap="round" />
-                <path d="M50 70C30 70 20 50 20 35C20 20 35 10 50 30C65 10 80 20 80 35C80 50 70 70 50 70Z" fill="none"
-                    stroke="#e5a5b5" stroke-width="2" stroke-linejoin="round" />
-                <path d="M50 70C40 70 35 55 50 40C65 55 60 70 50 70Z" fill="none" stroke="#e5a5b5" stroke-width="1.5" />
-                <path d="M50 30V40" stroke="#e5a5b5" stroke-width="1.5" />
-                <path d="M30 85C30 85 45 80 50 70" stroke="#e5a5b5" stroke-width="2" fill="none" />
+            <!-- Icono corazón diminuto para estilo Royal -->
+            <svg style="width: 35px; margin: 0 auto 15px auto; fill: none; stroke: #C47A8A; stroke-width: 1.2; stroke-linejoin: round; display: block;" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
-
-            <h1>Para ti...</h1>
-            <p>🌷 Toca la pantalla para abrir 🌷</p>
+            <h1>Para ti</h1>
+            <div class="royal-divider" style="margin: 15px auto; width: 60%; opacity: 0.5;">
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#C47A8A" stroke="none"/></svg>
+            </div>
+            <p>Toca para abrir</p>
         </div>
     </div>
 
-    <div class="hero">
-        <p>Estás invitado a celebrar los XV años de</p>
-        <div class="glass-box">
-            <h1>Anahí Rosero</h1>
-        </div>
+    <div class="elegant-container">
+        <!-- SVG Corazón como primer elemento en estilo línea / Line-art fino -->
+        <svg style="width: 35px; margin: 0 auto 5px auto; fill: none; stroke: #C47A8A; stroke-width: 1.2; stroke-linejoin: round;"
+            viewBox="0 0 24 24">
+            <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
 
-        <div class="polaroid">
-            <div class="tape tape-1"></div>
-            <div class="tape tape-2"></div>
-            <div class="polaroid-inner">
-                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:150px;position:absolute;bottom:-20px;opacity:0.6;">
-                    <path d="M100,50 C125,50 150,100 100,150 C50,100 75,50 100,50 Z" fill="#ECAFC0"/>
-                    <path d="M100,50 C70,70 80,120 100,150 C120,120 130,70 100,50 Z" fill="#EAB6C7"/>
-                </svg>
-                <div class="polaroid-text">
-                    <div class="polaroid-mes">Mayo</div>
-                    <div class="polaroid-dia">30</div>
-                    <div class="polaroid-mes" style="font-size:1.2em;letter-spacing:3px;">2026</div>
-                </div>
+        <p class="royal-intro">
+            "Con la bendición de Dios y el amor de mi familia, me siento muy feliz de llegar a este momento de mi vida.
+            Ha llegado el gran día y por eso quiero que tú estés presente y crear un gran recuerdo inolvidable."
+        </p>
+
+        <p class="elegant-subtitle">MIS XV AÑOS</p>
+        <h1 class="elegant-title">Anahí Rosero</h1>
+
+        <p class="royal-parents">EN COMPAÑÍA DE MIS PADRES</p>
+        <p class="royal-invite-text">Tenemos el honor de invitarlos a celebrar este día tan especial, el próximo:</p>
+
+        <!-- DISEÑO DE FECHA AL ESTILO DE LA IMAGEN DE REFERENCIA -->
+        <div class="royal-date-block">
+            <div class="royal-date-left">
+                <span style="color:#C47A8A;">Sábado</span>
+                <span style="color:#9282A8;">Mayo</span>
+            </div>
+            <div class="royal-date-center">30</div>
+            <div class="royal-date-right">
+                <span>2026</span>
+                <hr>
+                <span style="color:#C47A8A; font-size: 0.9em;">18:00 HRS</span>
             </div>
         </div>
 
-        <br>
         <div class="countdown" id="reloj">Cargando contador...</div>
-    </div>
 
-    <!-- TARJETAS ESTILO STORIES -->
-    <div class="section-card">
-        <div class="card-header">
-            <h2>Ubicación</h2>
-            <span class="card-number">[01]</span>
-        </div>
-        <div class="card-body">
-            <div class="card-icon-container">
-                <svg class="icon-svg" viewBox="0 0 24 24">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <circle cx="12" cy="10" r="3" stroke-linecap="round" stroke-linejoin="round"></circle>
-                </svg>
-            </div>
-            <p>Te espero para celebrar este día tan especial llenos de alegría e ilusión.</p>
-            <a href="https://maps.app.goo.gl/89F79ki761orSMBM8" class="btn" target="_blank">Ver Mapa</a>
-        </div>
-    </div>
+        <div class="royal-divider"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#C47A8A" stroke="none"/></svg></div>
 
-    <div class="section-card">
-        <div class="card-header">
-            <h2>Dress Code</h2>
-            <span class="card-number">[02]</span>
+        <div class="elegant-section">
+            <h3><svg style="width:20px; fill:none; stroke:#C47A8A; stroke-width:1.5;" viewBox="0 0 24 24">
+                    <path d="M12 2L2 12h3v8h14v-8h3L12 2z" />
+                </svg> Ceremonia y Recepción</h3>
+            <p><strong>Ubicación de la Fiesta</strong><br>Te espero para celebrar llenos de alegría e ilusión.</p>
+            <a href="https://maps.app.goo.gl/89F79ki761orSMBM8" target="_blank" class="btn-elegant">Ver Ubicación</a>
         </div>
-        <div class="card-body">
-            <div class="card-icon-container">
-                <svg class="icon-svg" viewBox="0 0 24 24">
-                    <path d="M20.38 3.46L16 2a2.3 2.3 0 0 0-1.88.35L12 4l-2.12-1.65A2.3 2.3 0 0 0 8 2L3.62 3.46C3.25 3.58 3 3.93 3 4.33V18c0 .32.18.61.47.76l8 4c.33.16.73.16 1.06 0l8-4c.29-.15.47-.44.47-.76V4.33c0-.4-.25-.75-.62-.87zM12 4l2.12 1.65A2.3 2.3 0 0 0 16 6l4.38-1.46"></path>
-                </svg>
-            </div>
-            <p><strong>Elegantes y Fabulosos.</strong><br>Se reserva el color Rose Gold para la quinceañera.</p>
-        </div>
-    </div>
 
-    <div class="section-card">
-        <div class="card-header">
-            <h2>Obsequios & Momentos</h2>
-            <span class="card-number">[03]</span>
-        </div>
-        <div class="card-body">
-            <div class="card-icon-container">
-                <svg class="icon-svg" viewBox="0 0 24 24">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-            </div>
-            <p>Un regalo en sobre cerrado lo sabré apreciar con cariño.</p>
-            <br>
-            <p>Sube las fotos y videos que tomes durante la fiesta directamente aquí:</p>
-            <a href="https://photos.app.goo.gl/vprDvVDhMG2M9VXK8" class="btn" target="_blank">Subir mis fotos 📸</a>
-        </div>
-    </div>
+        <div class="royal-divider"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#C47A8A" stroke="none"/></svg></div>
 
-    <div class="section-card">
-        <div class="card-header">
-            <h2>Asistencia</h2>
-            <span class="card-number">[04]</span>
+        <div class="elegant-section">
+            <h3><svg style="width:20px; fill:none; stroke:#C47A8A; stroke-width:1.5;" viewBox="0 0 24 24">
+                    <path
+                        d="M20.38 3.46L16 2a2.3 2.3 0 0 0-1.88.35L12 4l-2.12-1.65A2.3 2.3 0 0 0 8 2L3.62 3.46C3.25 3.58 3 3.93 3 4.33V18c0 .32.18.61.47.76l8 4c.33.16.73.16 1.06 0l8-4c.29-.15.47-.44.47-.76V4.33c0-.4-.25-.75-.62-.87zM12 4l2.12 1.65A2.3 2.3 0 0 0 16 6l4.38-1.46" />
+                </svg> Dress Code</h3>
+            <p><strong>Elegantes y Fabulosos</strong><br><span style="color:#9282A8;">Se reserva el color Rose Gold para
+                    la quinceañera.</span></p>
         </div>
-        <div class="card-body">
+
+        <div class="royal-divider"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#C47A8A" stroke="none"/></svg></div>
+
+        <div class="elegant-section">
+            <h3><svg style="width:20px; fill:none; stroke:#C47A8A; stroke-width:1.5;" viewBox="0 0 24 24">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" stroke="#C47A8A" />
+                </svg> Mesa de Regalos</h3>
+            <p><strong>Lluvia de sobres</strong><br>Un regalo en sobre cerrado lo sabré apreciar con cariño.</p>
+        </div>
+
+        <div class="royal-divider"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#C47A8A" stroke="none"/></svg></div>
+
+        <div class="elegant-section">
+            <h3><svg style="width:20px; fill:none; stroke:#C47A8A; stroke-width:1.5;" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z" />
+                </svg> Captura y Comparte</h3>
+            <p>¡Ayúdame a guardar los mejores recuerdos subiendo tus fotos de la fiesta!</p>
+            <a href="https://photos.app.goo.gl/vprDvVDhMG2M9VXK8" target="_blank" class="btn-elegant">Subir mis
+                fotos</a>
+        </div>
+
+        <div class="royal-divider"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#C47A8A" stroke="none"/></svg></div>
+
+        <div class="elegant-section" style="padding-top: 10px;">
+            <h3>Confirmar Asistencia</h3>
             <p>Por favor, confirma tu asistencia antes del 17 de Abril.</p>
-            <form id="formConfirmacion">
+            <form id="formConfirmacion" class="form-elegant">
                 <input type="text" name="nombre" placeholder="Tu Nombre y Apellido" required>
                 <select name="asistencia" id="selectAsistencia" required>
                     <option value="" disabled selected>¿Asistirás?</option>
                     <option value="Sí">Sí, ahí estaré</option>
                     <option value="No">No podré asistir</option>
                 </select>
-                <input type="number" name="acompanantes" id="inputAcompanantes" placeholder="Número de acompañantes" min="0" required>
-                <textarea name="mensaje" placeholder="Un mensaje para la quinceañera (opcional)"></textarea>
-                <button type="submit" class="btn">Enviar Confirmación</button>
+                <input type="number" name="acompanantes" id="inputAcompanantes" placeholder="Número de acompañantes"
+                    min="0" required>
+                <textarea name="mensaje" placeholder="Un mensaje para la quinceañera"></textarea>
+                <button type="submit" class="btn-elegant" style="width: 100%;">ENVIAR CONFIRMACIÓN</button>
+                <p id="mensajeExito"
+                    style="display:none; color: #C47A8A; margin-top: 10px; font-weight: bold; text-align: center;">¡Tú
+                    respuesta ha sido guardada!</p>
             </form>
-            <p id="mensajeExito" style="display:none; color: #C47A8A; font-weight: bold; margin-top: 15px;">¡Gracias! Tu respuesta fue registrada.</p>
         </div>
     </div>
 
@@ -740,6 +829,7 @@
             audio.play();
             const portada = document.getElementById('portada');
             portada.style.opacity = '0';
+            document.body.classList.add('abierto');
             setTimeout(() => { portada.style.visibility = 'hidden'; }, 1000);
         }
 
@@ -804,8 +894,9 @@
             );
             const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             const maxScroll = Math.max(1, docHeight - windowHeight);
-            
-            const progress = Math.min(scrollY / Math.max(1, maxScroll * 0.9), 1);
+
+            // Limitamos progress entre 0 y 1 para que un scroll elástico (negativo) "hacia arriba" no rompa la matemática de la posición
+            const progress = Math.max(0, Math.min(scrollY / Math.max(1, maxScroll * 0.9), 1));
 
             document.querySelectorAll('.petal-back').forEach((el, i) => {
                 const p = progress * (1 + i * 0.15); // Diferente ritmo
@@ -820,7 +911,8 @@
             document.querySelectorAll('.petal-right-back').forEach((el, i) => {
                 const p = progress * (0.9 + i * 0.1);
                 const wave = Math.sin(p * Math.PI * 2) * 50;
-                el.style.transform = `translate(${wave + p * 200}px, ${p * 600}px) rotate(${p * 90}deg)`;
+                // Movemos a -20px para que salgan hacia los bordes, NO hacia el centro de la pantalla
+                el.style.transform = `translate(${wave + p * -20}px, ${p * 600}px) rotate(${p * 45}deg)`;
             });
             document.querySelectorAll('.petal-left').forEach((el, i) => {
                 const p = progress * (1.2 + i * 0.25);
@@ -830,12 +922,14 @@
             document.querySelectorAll('.petal-right').forEach((el, i) => {
                 const p = progress * (1.15 + i * 0.05);
                 const wave = Math.cos(p * Math.PI * 3.5) * 40;
-                el.style.transform = `translate(${wave + p * 150}px, ${p * 750}px) rotate(${p * 85}deg)`;
+                // Movemos a -60px para que salgan hacia el borde
+                el.style.transform = `translate(${wave + p * -60}px, ${p * 750}px) rotate(${p * 65}deg)`;
             });
             document.querySelectorAll('.petal-center').forEach((el, i) => {
                 const p = progress * (1.05 + i * 0.3);
                 const wave = Math.sin(p * Math.PI * 4.5) * 35;
-                el.style.transform = `translate(${wave + p * 30}px, ${p * 700}px) rotate(${p * 40}deg)`;
+                // Movemos a -10px en vez de hacia adentro
+                el.style.transform = `translate(${wave + p * -10}px, ${p * 700}px) rotate(${p * 40}deg)`;
             });
         });
     </script>
